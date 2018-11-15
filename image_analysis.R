@@ -1,17 +1,19 @@
 
 library(readxl)
+library(tidyr)
+library(dplyr)
 
 setwd("C:/Users/Alyssa/Dropbox/R Group/") # Change to your directory
 sytox_data <- read_excel("./Sytox Data.xlsx", sheet = 1)
 
-library(tidyr)
-library(dplyr)
+
 
 
 sytox_data = sytox_data %>%
-  separate(Source, into = c("drop", 'timepoint', 'treatment', 'myelin', 'glucose', "drop"), sep= ' ', remove = TRUE) %>%
+  separate(Source, into = c("drop", 'timepoint', 'treatment', 'myelin', 'glucose', "drop2"), sep= ' ', remove = TRUE) %>%
   unite(mye.treatment, c("treatment", "myelin")) %>%
-  select(-drop) 
+  select(-drop) %>%
+  select(-drop2)
 
 head(sytox_data)
 
