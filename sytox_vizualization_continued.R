@@ -11,6 +11,10 @@ mkCon <- function(nm) {
 sytox_data_full <- read.table(mkCon('sytox_data_full.csv'), sep=',',header=T,comment.char='', row.names = 1)
 sytox_data_full$glucose = as.character(sytox_data_full$glucose)
 
+mean_stats_full = sytox_data_full %>%
+  group_by(glucose, mye.treatment) %>%
+  summarise(percent_dead_mean = mean(percent_dead), sd_percent = sd(percent_dead))
+
 #generate the table of statisitcs 
 mean_stats_full = sytox_data_full %>%
   group_by(glucose, mye.treatment) %>%
@@ -30,13 +34,14 @@ library(outliers)
 otest = sytox_data_full %>%
   filter(glucose ==3) %>%
   filter(mye.treatment == "+_Mye") 
+
 grubbs.test(otest$percent_dead)
 
 library(cowplot)
 #box plot to show data and outliers
 nooutlier =ggplot(sytox_data_full, 
        aes(x= glucose, y = percent_dead, fill = mye.treatment)) +
-  geom_boxplot(outlier.shape = NA)+
+  geom_boxplot(outlier.shape = NA) +
   ylab("Percentage of Dead Cells") +
   xlab("Glucose Concentration (g/L)") +
   labs(title = "Outliers Hidden")+
@@ -44,6 +49,7 @@ nooutlier =ggplot(sytox_data_full,
                     breaks=c("+_Mye", "No_Mye"),
                     labels=c("Treated", "Untreated"))+
   theme(legend.position="bottom")
+
 woutlier =ggplot(sytox_data_full, 
                   aes(x= glucose, y = percent_dead, fill = mye.treatment)) +
   geom_boxplot()+
@@ -54,6 +60,7 @@ woutlier =ggplot(sytox_data_full,
                       breaks=c("+_Mye", "No_Mye"),
                       labels=c("Treated", "Untreated"))+
   theme(legend.position="bottom")
+
 plot_grid(woutlier, nooutlier, labels = "AUTO")
 
 
